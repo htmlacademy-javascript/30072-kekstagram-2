@@ -1,4 +1,4 @@
-const descriptions = [
+const DESCRIPTIONS = [
   'Описание 1',
   'Описание 2 другое',
   'Описание 3 еще какое-то',
@@ -6,7 +6,7 @@ const descriptions = [
   'Описание 5 последнее',
 ];
 
-const names = [
+const NAMES = [
   'Иван',
   'Маша',
   'Стас',
@@ -14,7 +14,59 @@ const names = [
   'Кекс',
 ];
 
-const originalMessage = 'Всё отлично! В целом всё неплохо. Но не всё. Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально. Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше. Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше. Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!';
+const MESSAGES = [
+  'Всё отлично!',
+  'В целом всё неплохо. Но не всё.',
+  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
+  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
+  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
+  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',
+];
+
+const CommentId = {
+  MIN: 0,
+  MAX: 1000,
+};
+
+const CommentAvatar = {
+  MIN: 1,
+  MAX: 6,
+};
+
+const CommentMessage = {
+  MIN: 0,
+  MAX: MESSAGES.length - 1,
+};
+
+const CommentName = {
+  MIN: 0,
+  MAX: NAMES.length - 1,
+};
+
+const PhotoId = {
+  MIN: 1,
+  MAX: 25,
+};
+
+const PhotoNumber = {
+  MIN: 1,
+  MAX: 25,
+};
+
+const PhotoDescription = {
+  MIN: 0,
+  MAX: DESCRIPTIONS.length - 1,
+};
+
+const PhotoLikes = {
+  MIN: 15,
+  MAX: 200,
+};
+
+const PhotoComments = {
+  MIN: 0,
+  MAX: 30,
+};
 
 const getRandomInteger = (i, j) => {
   const lower = Math.ceil(Math.min(i, j));
@@ -23,15 +75,7 @@ const getRandomInteger = (i, j) => {
   return Math.floor(result);
 };
 
-function getRandomMessage(text, count) {
-  const sentences = text.match(/[^.!?]+[.!?]+(\s|$)/g);
-  const trimSentences = sentences.map((s) => s.trim());
-  const shuffledSentences = trimSentences.sort(() => 0.5 - Math.random());
-
-  return shuffledSentences.slice(0, count).join(' ');
-}
-
-function getUniqueId(usedIds, minId, maxId) {
+const getUniqueId = (usedIds, minId, maxId) => {
   if (usedIds.length >= (maxId - minId + 1)) {
     return [];
   }
@@ -45,28 +89,27 @@ function getUniqueId(usedIds, minId, maxId) {
   usedIds.push(uniqueId);
 
   return uniqueId;
-}
+};
 
 const createRandomComment = () => {
-  const randomMessage = getRandomMessage(originalMessage, getRandomInteger(1, 2));
   const usedCommentIds = [];
 
   return {
-    id: getUniqueId(usedCommentIds, 0, 1000),
-    avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
-    message: randomMessage,
-    name: names[getRandomInteger(0, names.length - 1)],
+    id: getUniqueId(usedCommentIds, CommentId.MIN, CommentId.MAX),
+    avatar: `img/avatar-${getRandomInteger(CommentAvatar.MIN, CommentAvatar.MAX)}.svg`,
+    message: MESSAGES[getRandomInteger(CommentMessage.MIN, CommentMessage.MAX)],
+    name: NAMES[getRandomInteger(CommentName.MIN, CommentName.MAX)],
   };
 };
 
 const usedPhotoIds = [];
 
-const createPhotoDataObject = () => {
-  const id = getUniqueId(usedPhotoIds, 1, 25);
-  const url = `photos/${getRandomInteger(1, 25)}.jpg`;
-  const description = descriptions[getRandomInteger(0, descriptions.length - 1)];
-  const likes = getRandomInteger(15, 200);
-  const comments = Array.from({length: getRandomInteger(0, 30)}, createRandomComment);
+const createPhotoData = () => {
+  const id = getUniqueId(usedPhotoIds, PhotoId.MIN, PhotoId.MAX);
+  const url = `photos/${getRandomInteger(PhotoNumber.MIN, PhotoNumber.MAX)}.jpg`;
+  const description = DESCRIPTIONS[getRandomInteger(PhotoDescription.MIN, PhotoDescription.MAX)];
+  const likes = getRandomInteger(PhotoLikes.MIN, PhotoLikes.MAX);
+  const comments = Array.from({length: getRandomInteger(PhotoComments.MIN, PhotoComments.MAX)}, createRandomComment);
 
   return {
     id: id,
@@ -77,4 +120,4 @@ const createPhotoDataObject = () => {
   };
 };
 
-Array.from({length: 25}, createPhotoDataObject);
+Array.from({length: 25}, createPhotoData);
