@@ -1,5 +1,8 @@
-import { createGalley } from './gallery.js';
+import { generatePhotos } from './data.js';
+import { createGallery } from './gallery.js';
 import { managePhotoModal } from './photo-modal.js';
 
-createGalley();
-managePhotoModal();
+const photos = generatePhotos();
+
+createGallery(photos);
+managePhotoModal(photos);

@@ -1,21 +1,19 @@
-import { photos } from './data.js';
+const photoTemplate = document.querySelector('#picture').content;
+const photoWrapper = document.querySelector('.pictures');
 
-
-export const createGalley = () => {
-  const photoTemplate = document.querySelector('#picture').content;
-  const photoWrapper = document.querySelector('.pictures');
-  const photoFragment = document.createDocumentFragment();
+export const createGallery = (photos) => {
+  const fragment = document.createDocumentFragment();
 
   photos.forEach((photo) => {
-    const photoTemplateCloned = photoTemplate.cloneNode(true);
-    photoTemplateCloned.querySelector('.picture__img').src = photo.url;
-    photoTemplateCloned.querySelector('.picture__img').alt = photo.description;
-    photoTemplateCloned.querySelector('.picture__img').dataset.imageId = photo.id;
-    photoTemplateCloned.querySelector('.picture__comments').textContent = photo.comments.length;
-    photoTemplateCloned.querySelector('.picture__likes').textContent = photo.likes;
-    photoFragment.append(photoTemplateCloned);
+    const newPhoto = photoTemplate.cloneNode(true);
+    newPhoto.querySelector('.picture__img').src = photo.url;
+    newPhoto.querySelector('.picture__img').alt = photo.description;
+    newPhoto.querySelector('.picture__img').dataset.imageId = photo.id;
+    newPhoto.querySelector('.picture__comments').textContent = photo.comments.length;
+    newPhoto.querySelector('.picture__likes').textContent = photo.likes;
+    fragment.append(newPhoto);
   });
 
-  photoWrapper.append(photoFragment);
+  photoWrapper.append(fragment);
 };
 

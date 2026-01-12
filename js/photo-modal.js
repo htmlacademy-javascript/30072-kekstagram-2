@@ -1,17 +1,17 @@
-import { photos } from './data.js';
-
 const bodyElement = document.querySelector('body');
 const photoModal = document.querySelector('.big-picture');
 const photoModalImage = photoModal.querySelector('.big-picture__img img');
 const photoModalCloseButton = photoModal.querySelector('.big-picture__cancel');
 const photoLikesCount = photoModal.querySelector('.likes-count');
-const photoCounter = photoModal.querySelector('.social__comment-count');
 const photoDescription = photoModal.querySelector('.social__caption');
-const photoCommentsLoader = photoModal.querySelector('.comments-loader');
 const commentsTemplate = photoModal.querySelector('.social__comments');
 const commentTemplate = photoModal.querySelector('.social__comment');
+const commentShownCount = photoModal.querySelector('.social__comment-shown-count');
+const commentTotalCount = photoModal.querySelector('.social__comment-total-count');
+const commentsLoader = photoModal.querySelector('.social__comments-loader');
 
-const createFullPhoto = (imageId) => {
+
+const createFullPhoto = (imageId, photos) => {
   const currentPhoto = photos.find((photo) => photo.id === imageId);
 
   photoModalImage.src = currentPhoto.url;
@@ -19,21 +19,43 @@ const createFullPhoto = (imageId) => {
   photoDescription.textContent = currentPhoto.description;
 
   const commentFragment = document.createDocumentFragment();
+  const currentComments = currentPhoto.comments;
 
-  currentPhoto.comments.forEach((comment) => {
-    const commentTemplateCloned = commentTemplate.cloneNode(true);
+  commentTotalCount.textContent = currentComments.length;
 
-    commentTemplateCloned.querySelector('.social__picture').src = comment.avatar;
-    commentTemplateCloned.querySelector('.social__picture').alt = comment.name;
-    commentTemplateCloned.querySelector('.social__text').textContent = comment.message;
+  let shownComments = [];
+  const LOADING_STEP = 5;
 
-    commentFragment.append(commentTemplateCloned);
+  const renderComments = () => {
+    const commentsChunk = currentComments.slice(0, shownComments.length + LOADING_STEP);
+    shownComments = commentsChunk;
+
+    shownComments.forEach((comment) => {
+      const newComment = commentTemplate.cloneNode(true);
+
+      newComment.querySelector('.social__picture').src = comment.avatar;
+      newComment.querySelector('.social__picture').alt = comment.name;
+      newComment.querySelector('.social__text').textContent = comment.message;
+
+      commentFragment.append(newComment);
+    });
+
+    commentsTemplate.innerHTML = '';
+    commentsTemplate.append(commentFragment);
+    commentShownCount.textContent = shownComments.length;
+
+    if (shownComments.length === currentComments.length) {
+      commentsLoader.classList.add('hidden');
+    } else {
+      commentsLoader.classList.remove('hidden');
+    }
+  };
+  renderComments();
+
+  commentsLoader.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    renderComments();
   });
-
-  commentsTemplate.innerHTML = '';
-  commentsTemplate.append(commentFragment);
-  photoCounter.classList.add('hidden');
-  photoCommentsLoader.classList.add('hidden');
 };
 
 const openModal = () => {
@@ -46,12 +68,12 @@ const closeModal = () => {
   bodyElement.classList.remove('modal-open');
 };
 
-const handleGalleryImageClick = (evt) => {
+const handleGalleryImageClick = (evt, photos) => {
   const currentElement = evt.target;
   if (currentElement.classList.contains('picture__img')) {
     evt.preventDefault();
 
-    createFullPhoto(Number(currentElement.dataset.imageId));
+    createFullPhoto(Number(currentElement.dataset.imageId), photos);
 
     openModal();
   }
@@ -69,8 +91,8 @@ const handleCloseButtonKeydown = (evt) => {
   }
 };
 
-export const managePhotoModal = () => {
-  document.addEventListener('click', handleGalleryImageClick);
+export const managePhotoModal = (photos) => {
+  document.addEventListener('click', (evt) => handleGalleryImageClick(evt, photos));
   photoModalCloseButton.addEventListener('click', handleCloseButtonClick);
   document.addEventListener('keydown', handleCloseButtonKeydown);
 };
