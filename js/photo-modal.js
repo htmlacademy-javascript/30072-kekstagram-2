@@ -10,6 +10,7 @@ const commentShownCount = photoModal.querySelector('.social__comment-shown-count
 const commentTotalCount = photoModal.querySelector('.social__comment-total-count');
 const commentsLoader = photoModal.querySelector('.social__comments-loader');
 
+const LOADING_STEP = 5;
 
 const createFullPhoto = (imageId, photos) => {
   const currentPhoto = photos.find((photo) => photo.id === imageId);
@@ -24,7 +25,6 @@ const createFullPhoto = (imageId, photos) => {
   commentTotalCount.textContent = currentComments.length;
 
   let shownComments = [];
-  const LOADING_STEP = 5;
 
   const renderComments = () => {
     const commentsChunk = currentComments.slice(0, shownComments.length + LOADING_STEP);
@@ -85,7 +85,6 @@ const handleCloseButtonClick = (evt) => {
 };
 
 const handleCloseButtonKeydown = (evt) => {
-  evt.preventDefault();
   if (evt.key === 'Escape') {
     closeModal();
   }
