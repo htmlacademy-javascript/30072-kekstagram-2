@@ -1,13 +1,18 @@
-import { chooseEffect, chooseOption } from './slider-helpers';
+import { getEffectFilter, getEffectOptions } from './slider-helpers.js';
 
 const COMMENT_MAX_LENGTH = 140;
 
-const HASHTAGS_MAX_AMOUNT = 5;
-const HASHTAG_MAX_LENGTH = 20;
+const Hashtag = {
+  MAX_AMOUNT: 5,
+  MAX_LENGTH: 20,
+};
 
-const IMAGE_MIN_SCALE = 25;
-const IMAGE_MAX_SCALE = 100;
-const IMAGE_SCALE_STEP = 25;
+const Scale = {
+  MIN: 25,
+  MAX: 100,
+  STEP: 25,
+};
+
 
 const bodyElement = document.querySelector('body');
 const uploadInput = document.querySelector('.img-upload__input');
@@ -15,6 +20,7 @@ const modalOverlay = document.querySelector('.img-upload__overlay');
 const closeModalButton = document.querySelector('.img-upload__cancel');
 
 const imageForm = document.querySelector('.img-upload__form');
+const previewImage = document.querySelector('.img-upload__preview img');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentTextarea = document.querySelector('.text__description');
@@ -22,7 +28,6 @@ const commentTextarea = document.querySelector('.text__description');
 const scaleDownButton = document.querySelector('.scale__control--smaller');
 const scaleUpButton = document.querySelector('.scale__control--bigger');
 const scaleInput = document.querySelector('.scale__control--value');
-const previewImage = document.querySelector('.img-upload__preview img');
 
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectWrapper = document.querySelector('.img-upload__effect-level');
@@ -34,25 +39,19 @@ const pristine = new Pristine(imageForm, {
   errorTextParent: 'img-upload__field-wrapper'
 });
 
-noUiSlider.create(sliderElement, {
-  range: {
-    min: 0,
-    max: 100
-  },
-  start: 20,
-});
+noUiSlider.create(sliderElement, getEffectOptions());
 
 const openModal = () => {
   bodyElement.classList.add('modal-open');
   modalOverlay.classList.remove('hidden');
 
-  closeModalButton.addEventListener('click', handleCloseButtonClick);
-  document.addEventListener('keydown', handleCloseModalKeydown);
+  closeModalButton.addEventListener('click', onCloseButtonClick);
+  document.addEventListener('keydown', onDocumentKeydown);
 
-  scaleDownButton.addEventListener('click', handleScaleDownButtonClick);
-  scaleUpButton.addEventListener('click', handleScaleUpButtonClick);
+  scaleDownButton.addEventListener('click', onScaleDownButtonClick);
+  scaleUpButton.addEventListener('click', onScaleUpButtonClick);
 
-  document.addEventListener('click', handleRadioClick);
+  document.addEventListener('click', onDocumentClick);
   effectWrapper.classList.add('hidden');
 };
 
@@ -61,21 +60,21 @@ const closeModal = () => {
   modalOverlay.classList.add('hidden');
   imageForm.reset();
   pristine.reset();
-  document.removeEventListener('keydown', handleCloseModalKeydown);
-  document.removeEventListener('click', handleRadioClick);
+  document.removeEventListener('keydown', onDocumentKeydown);
+  document.removeEventListener('click', onDocumentClick);
 };
 
-function handleUploadInputClick (evt) {
+function onUploadInputChange (evt) {
   evt.preventDefault();
   openModal();
 }
 
-function handleCloseButtonClick (evt) {
+function onCloseButtonClick (evt) {
   evt.preventDefault();
   closeModal();
 }
 
-function handleCloseModalKeydown (evt) {
+function onDocumentKeydown (evt) {
   if (evt.key === 'Escape') {
     if (!(document.activeElement === hashtagsInput || document.activeElement === commentTextarea)) {
       closeModal();
@@ -95,12 +94,12 @@ const checkHashtagValidity = () => {
   if (uniqueHashtagsArray.size !== hashtagsArray.length) {
     return false;
   }
-  if (hashtagsArray.length > HASHTAGS_MAX_AMOUNT) {
+  if (hashtagsArray.length > Hashtag.MAX_AMOUNT) {
     return false;
   }
 
   return hashtagsArray.every((hashtag) => {
-    if (hashtag.length > HASHTAG_MAX_LENGTH) {
+    if (hashtag.length > Hashtag.MAX_LENGTH) {
       return false;
     }
     if (hashtag === '#') {
@@ -119,32 +118,32 @@ const checkCommentValidity = () => commentTextarea.value.length <= COMMENT_MAX_L
 
 const updateImageScale = (direction) => {
   const purifiedCurrentValue = parseInt(scaleInput.value, 10);
-  if (direction === 'up' && purifiedCurrentValue < IMAGE_MAX_SCALE) {
-    scaleInput.value = `${purifiedCurrentValue + IMAGE_SCALE_STEP}%`;
-    previewImage.style.scale = (purifiedCurrentValue + IMAGE_SCALE_STEP) / 100;
+  if (direction === 'up' && purifiedCurrentValue < Scale.MAX) {
+    scaleInput.value = `${purifiedCurrentValue + Scale.STEP}%`;
+    previewImage.style.scale = (purifiedCurrentValue + Scale.STEP) / 100;
   }
-  if (direction === 'down' && purifiedCurrentValue > IMAGE_MIN_SCALE) {
-    scaleInput.value = `${purifiedCurrentValue - IMAGE_SCALE_STEP}%`;
-    previewImage.style.scale = (purifiedCurrentValue - IMAGE_SCALE_STEP) / 100;
+  if (direction === 'down' && purifiedCurrentValue > Scale.MIN) {
+    scaleInput.value = `${purifiedCurrentValue - Scale.STEP}%`;
+    previewImage.style.scale = (purifiedCurrentValue - Scale.STEP) / 100;
   }
 };
 
-function handleScaleDownButtonClick (evt) {
+function onScaleDownButtonClick (evt) {
   evt.preventDefault();
   updateImageScale('down');
 }
 
-function handleScaleUpButtonClick (evt) {
+function onScaleUpButtonClick (evt) {
   evt.preventDefault();
   updateImageScale('up');
 }
 
-function handleRadioClick (evt) {
+function onDocumentClick (evt) {
   const currentElement = evt.target;
   if (currentElement.classList.contains('effects__radio')) {
     const currentValue = currentElement.value;
-    const currentEffect = chooseEffect(currentValue, effectInput.value);
-    const currentOption = chooseOption(currentValue);
+    const currentEffect = getEffectFilter(currentValue, effectInput.value);
+    const currentOption = getEffectOptions(currentValue);
 
     if (!currentEffect) {
       effectWrapper.classList.add('hidden');
@@ -159,14 +158,14 @@ function handleRadioClick (evt) {
 
 sliderElement.noUiSlider.on('update', () => {
   effectInput.value = sliderElement.noUiSlider.get();
-  previewImage.style.filter = chooseEffect(imageForm.elements.effect.value, effectInput.value);
+  previewImage.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
 });
 
 export const submitImageForm = () => {
   pristine.addValidator(hashtagsInput, checkHashtagValidity);
   pristine.addValidator(commentTextarea, checkCommentValidity);
 
-  uploadInput.addEventListener('change', handleUploadInputClick);
+  uploadInput.addEventListener('change', onUploadInputChange);
 
   imageForm.addEventListener('submit', (evt) => {
     evt.preventDefault();

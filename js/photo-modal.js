@@ -62,18 +62,18 @@ const openModal = () => {
   photoModal.classList.remove('hidden');
   bodyElement.classList.add('modal-open');
 
-  photoModalCloseButton.addEventListener('click', handleCloseButtonClick);
-  document.addEventListener('keydown', handleCloseButtonKeydown);
+  photoModalCloseButton.addEventListener('click', onCloseButtonClick);
+  document.addEventListener('keydown', onDocumentKeydown);
 };
 
 const closeModal = () => {
   photoModal.classList.add('hidden');
   bodyElement.classList.remove('modal-open');
 
-  document.removeEventListener('keydown', handleCloseButtonKeydown);
+  document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-function handleGalleryImageClick (evt, photos) {
+function onDocumentClick (evt, photos) {
   const currentElement = evt.target;
   if (currentElement.classList.contains('picture__img')) {
     evt.preventDefault();
@@ -84,17 +84,17 @@ function handleGalleryImageClick (evt, photos) {
   }
 }
 
-function handleCloseButtonClick (evt) {
+function onCloseButtonClick (evt) {
   evt.preventDefault();
   closeModal();
 }
 
-function handleCloseButtonKeydown (evt) {
+function onDocumentKeydown (evt) {
   if (evt.key === 'Escape') {
     closeModal();
   }
 }
 
 export const managePhotoModal = (photos) => {
-  document.addEventListener('click', (evt) => handleGalleryImageClick(evt, photos));
+  document.addEventListener('click', (evt) => onDocumentClick(evt, photos));
 };

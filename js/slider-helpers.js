@@ -1,3 +1,11 @@
+const defaultOptions = {
+  range: {
+    min: 0,
+    max: 100
+  },
+  start: 0,
+};
+
 const chromeOptions = {
   range: {
     min: 0,
@@ -43,7 +51,7 @@ const heatOptions = {
   step: 0.1,
 };
 
-export const chooseEffect = (effect, value) => {
+export const getEffectFilter = (effect, value) => {
   switch (effect) {
     case 'chrome':
       return `grayscale(${value})`;
@@ -60,7 +68,7 @@ export const chooseEffect = (effect, value) => {
   }
 };
 
-export const chooseOption = (effect) => {
+export const getEffectOptions = (effect) => {
   switch (effect) {
     case 'chrome':
       return chromeOptions;
@@ -73,7 +81,6 @@ export const chooseOption = (effect) => {
     case 'heat':
       return heatOptions;
     default:
-      return {};
+      return defaultOptions;
   }
 };
-
