@@ -1,10 +1,13 @@
-import { generatePhotos } from './data.js';
+import { getData } from './api.js';
 import { createGallery } from './gallery.js';
 import { managePhotoModal } from './photo-modal.js';
-import { submitImageForm } from './photo-form.js';
+import { submitImageForm, showDataErrorMessage } from './photo-form.js';
 
-const photos = generatePhotos();
+getData().then((data) => {
+  createGallery(data);
+  managePhotoModal(data);
+}).catch(() => {
+  showDataErrorMessage();
+});
 
-createGallery(photos);
-managePhotoModal(photos);
 submitImageForm();

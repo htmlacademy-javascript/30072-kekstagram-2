@@ -1,4 +1,5 @@
-const bodyElement = document.querySelector('body');
+import { body } from './utils.js';
+
 const photoModal = document.querySelector('.big-picture');
 const photoModalImage = photoModal.querySelector('.big-picture__img img');
 const photoModalCloseButton = photoModal.querySelector('.big-picture__cancel');
@@ -60,7 +61,7 @@ const createFullPhoto = (imageId, photos) => {
 
 const openModal = () => {
   photoModal.classList.remove('hidden');
-  bodyElement.classList.add('modal-open');
+  body.classList.add('modal-open');
 
   photoModalCloseButton.addEventListener('click', onCloseButtonClick);
   document.addEventListener('keydown', onDocumentKeydown);
@@ -68,7 +69,7 @@ const openModal = () => {
 
 const closeModal = () => {
   photoModal.classList.add('hidden');
-  bodyElement.classList.remove('modal-open');
+  body.classList.remove('modal-open');
 
   document.removeEventListener('keydown', onDocumentKeydown);
 };

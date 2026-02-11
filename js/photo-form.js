@@ -1,11 +1,7 @@
+import { body } from './utils.js';
 import { getEffectFilter, getEffectOptions } from './slider-helpers.js';
-
-const COMMENT_MAX_LENGTH = 140;
-
-const Hashtag = {
-  MAX_AMOUNT: 5,
-  MAX_LENGTH: 20,
-};
+import { checkHashtagsValidity, checkCommentValidity, COMMENT_ERROR_MESSAGE, getHashtagsErrorMessage } from './form-validation.js';
+import { sendData } from './api.js';
 
 const Scale = {
   MIN: 25,
@@ -13,14 +9,15 @@ const Scale = {
   STEP: 25,
 };
 
+const REMOVE_SERVER_MESSAGE_TIMEOUT = 5000;
 
-const bodyElement = document.querySelector('body');
 const uploadInput = document.querySelector('.img-upload__input');
 const modalOverlay = document.querySelector('.img-upload__overlay');
 const closeModalButton = document.querySelector('.img-upload__cancel');
 
 const imageForm = document.querySelector('.img-upload__form');
 const previewImage = document.querySelector('.img-upload__preview img');
+const submitButton = document.querySelector('.img-upload__submit');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentTextarea = document.querySelector('.text__description');
@@ -33,6 +30,20 @@ const sliderElement = document.querySelector('.effect-level__slider');
 const effectWrapper = document.querySelector('.img-upload__effect-level');
 const effectInput = document.querySelector('.effect-level__value');
 
+const serverDataErrorTemplate = document.querySelector('#data-error');
+const serverDataErrorClone = serverDataErrorTemplate.content.cloneNode(true);
+const serverDataErrorElement = serverDataErrorClone.querySelector('.data-error');
+
+const formDataErrorTemplate = document.querySelector('#error');
+const formDataErrorClone = formDataErrorTemplate.content.cloneNode(true);
+const formDataErrorElement = formDataErrorClone.querySelector('.error');
+const tryAgainButton = formDataErrorElement.querySelector('.error__button');
+
+const formDataSuccessTemplate = document.querySelector('#success');
+const formDataSuccessClone = formDataSuccessTemplate.content.cloneNode(true);
+const formDataSuccessElement = formDataSuccessClone.querySelector('.success');
+const successCloseButton = formDataSuccessElement.querySelector('.success__button');
+
 const pristine = new Pristine(imageForm, {
   classTo: 'img-upload__field-wrapper',
   errorClass: 'img-upload__field-wrapper--error',
@@ -42,7 +53,7 @@ const pristine = new Pristine(imageForm, {
 noUiSlider.create(sliderElement, getEffectOptions());
 
 const openModal = () => {
-  bodyElement.classList.add('modal-open');
+  body.classList.add('modal-open');
   modalOverlay.classList.remove('hidden');
 
   closeModalButton.addEventListener('click', onCloseButtonClick);
@@ -56,7 +67,7 @@ const openModal = () => {
 };
 
 const closeModal = () => {
-  bodyElement.classList.remove('modal-open');
+  body.classList.remove('modal-open');
   modalOverlay.classList.add('hidden');
   imageForm.reset();
   pristine.reset();
@@ -81,40 +92,6 @@ function onDocumentKeydown (evt) {
     }
   }
 }
-
-const checkHashtagValidity = () => {
-  if (!hashtagsInput.value) {
-    return true;
-  }
-
-  const purifiedInputValue = hashtagsInput.value.trim().toLowerCase();
-  const hashtagsArray = purifiedInputValue.split(/\s+/).filter(Boolean);
-  const uniqueHashtagsArray = new Set(hashtagsArray);
-
-  if (uniqueHashtagsArray.size !== hashtagsArray.length) {
-    return false;
-  }
-  if (hashtagsArray.length > Hashtag.MAX_AMOUNT) {
-    return false;
-  }
-
-  return hashtagsArray.every((hashtag) => {
-    if (hashtag.length > Hashtag.MAX_LENGTH) {
-      return false;
-    }
-    if (hashtag === '#') {
-      return false;
-    }
-    if (!(/^#[a-zа-яё0-9]+$/i.test(hashtag))) {
-      return false;
-    }
-
-    return true;
-  });
-};
-
-const checkCommentValidity = () => commentTextarea.value.length <= COMMENT_MAX_LENGTH;
-
 
 const updateImageScale = (direction) => {
   const purifiedCurrentValue = parseInt(scaleInput.value, 10);
@@ -161,9 +138,69 @@ sliderElement.noUiSlider.on('update', () => {
   previewImage.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
 });
 
+const toggleSubmitButton = (disabled) => {
+  if (disabled) {
+    submitButton.disabled = true;
+  } else {
+    submitButton.disabled = false;
+  }
+};
+
+const showSuccessMessage = () => {
+  closeModal();
+  body.append(formDataSuccessElement);
+  successCloseButton.addEventListener('click', onSuccessCloseButtonClick);
+  body.addEventListener('keydown', onBodyKeydown);
+};
+
+const showErrorMessage = () => {
+  body.append(formDataErrorElement);
+  tryAgainButton.addEventListener('click', onTryAgainButtonClick);
+  body.addEventListener('keydown', onBodyKeydown);
+};
+
+export const showDataErrorMessage = () => {
+  body.append(serverDataErrorElement);
+  setTimeout(() => {
+    serverDataErrorElement.remove();
+  }, REMOVE_SERVER_MESSAGE_TIMEOUT);
+};
+
+const removeSuccessModal = () => {
+  formDataSuccessElement.remove();
+  body.removeEventListener('keydown', onBodyKeydown);
+};
+
+const removeErrorModal = () => {
+  formDataErrorElement.remove();
+  body.removeEventListener('keydown', onBodyKeydown);
+};
+
+function onSuccessCloseButtonClick (evt) {
+  evt.preventDefault();
+  removeSuccessModal();
+}
+
+function onTryAgainButtonClick (evt) {
+  evt.preventDefault();
+  removeErrorModal();
+}
+
+function onBodyKeydown (evt) {
+  if (evt.key === 'Escape') {
+    evt.stopPropagation();
+    if (formDataSuccessElement.isConnected) {
+      removeSuccessModal();
+    }
+    if (formDataErrorElement.isConnected) {
+      removeErrorModal();
+    }
+  }
+}
+
 export const submitImageForm = () => {
-  pristine.addValidator(hashtagsInput, checkHashtagValidity);
-  pristine.addValidator(commentTextarea, checkCommentValidity);
+  pristine.addValidator(hashtagsInput, () => checkHashtagsValidity(hashtagsInput), () => getHashtagsErrorMessage(hashtagsInput));
+  pristine.addValidator(commentTextarea, () => checkCommentValidity(commentTextarea), COMMENT_ERROR_MESSAGE);
 
   uploadInput.addEventListener('change', onUploadInputChange);
 
@@ -171,7 +208,11 @@ export const submitImageForm = () => {
     evt.preventDefault();
 
     if (pristine.validate(hashtagsInput, commentTextarea)) {
-      imageForm.submit();
+      const fetchBody = new FormData(evt.target);
+
+      toggleSubmitButton(true);
+
+      sendData(fetchBody, () => showSuccessMessage(), () => showErrorMessage(), () => toggleSubmitButton(false));
     }
   });
 };
