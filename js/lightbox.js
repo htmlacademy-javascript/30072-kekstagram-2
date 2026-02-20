@@ -1,5 +1,7 @@
 import { body } from './utils.js';
 
+const LOADING_STEP = 5;
+
 const photoModal = document.querySelector('.big-picture');
 const photoModalImage = photoModal.querySelector('.big-picture__img img');
 const photoModalCloseButton = photoModal.querySelector('.big-picture__cancel');
@@ -10,8 +12,6 @@ const commentTemplate = photoModal.querySelector('.social__comment');
 const commentShownCount = photoModal.querySelector('.social__comment-shown-count');
 const commentTotalCount = photoModal.querySelector('.social__comment-total-count');
 const commentsLoader = photoModal.querySelector('.social__comments-loader');
-
-const LOADING_STEP = 5;
 
 const createFullPhoto = (imageId, photos) => {
   const currentPhoto = photos.find((photo) => photo.id === imageId);
@@ -96,6 +96,6 @@ function onDocumentKeydown (evt) {
   }
 }
 
-export const managePhotoModal = (photos) => {
+export const manageLightbox = (photos) => {
   document.addEventListener('click', (evt) => onDocumentClick(evt, photos));
 };

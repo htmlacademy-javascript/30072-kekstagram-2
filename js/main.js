@@ -1,11 +1,12 @@
 import { getData } from './api.js';
 import { createGallery } from './gallery.js';
-import { managePhotoModal } from './photo-modal.js';
-import { submitImageForm, showDataErrorMessage } from './photo-form.js';
+import { manageLightbox } from './lightbox.js';
+import { showDataErrorMessage } from './form-state';
+import { submitImageForm } from './upload-form.js';
 
 getData().then((data) => {
   createGallery(data);
-  managePhotoModal(data);
+  manageLightbox(data);
 }).catch(() => {
   showDataErrorMessage();
 });

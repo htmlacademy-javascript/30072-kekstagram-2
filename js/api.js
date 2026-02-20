@@ -1,12 +1,21 @@
-export const getData = () => fetch('https://31.javascript.htmlacademy.pro/kekstagram/data')
+const BASE_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
+const ApiEndpoint = {
+  DATA: '/data',
+  UPLOAD: '/1',
+};
+
+export const getData = () => fetch(BASE_URL + ApiEndpoint.DATA)
   .then((response) => {
     if (response.ok) {
       return response.json();
     }
+  })
+  .catch(() => {
+    throw new Error('Не удалось получить данные');
   });
 
 export const sendData = (body, onSuccess, onError, onFinally) => {
-  fetch('https://31.javascript.htmlacademy.pro/kekstagram', {
+  fetch(BASE_URL + ApiEndpoint.UPLOAD, {
     method: 'POST',
     body: body,
   })
