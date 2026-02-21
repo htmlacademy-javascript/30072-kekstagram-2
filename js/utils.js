@@ -1,3 +1,5 @@
+export const body = document.querySelector('body');
+
 export const getRandomInteger = (i, j) => {
   const lower = Math.ceil(Math.min(i, j));
   const upper = Math.floor(Math.max(i, j));

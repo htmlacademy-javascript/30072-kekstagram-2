@@ -1,4 +1,7 @@
-const bodyElement = document.querySelector('body');
+import { body } from './utils.js';
+
+const LOADING_STEP = 5;
+
 const photoModal = document.querySelector('.big-picture');
 const photoModalImage = photoModal.querySelector('.big-picture__img img');
 const photoModalCloseButton = photoModal.querySelector('.big-picture__cancel');
@@ -9,8 +12,6 @@ const commentTemplate = photoModal.querySelector('.social__comment');
 const commentShownCount = photoModal.querySelector('.social__comment-shown-count');
 const commentTotalCount = photoModal.querySelector('.social__comment-total-count');
 const commentsLoader = photoModal.querySelector('.social__comments-loader');
-
-const LOADING_STEP = 5;
 
 const createFullPhoto = (imageId, photos) => {
   const currentPhoto = photos.find((photo) => photo.id === imageId);
@@ -60,20 +61,20 @@ const createFullPhoto = (imageId, photos) => {
 
 const openModal = () => {
   photoModal.classList.remove('hidden');
-  bodyElement.classList.add('modal-open');
+  body.classList.add('modal-open');
 
-  photoModalCloseButton.addEventListener('click', handleCloseButtonClick);
-  document.addEventListener('keydown', handleCloseButtonKeydown);
+  photoModalCloseButton.addEventListener('click', onCloseButtonClick);
+  document.addEventListener('keydown', onDocumentKeydown);
 };
 
 const closeModal = () => {
   photoModal.classList.add('hidden');
-  bodyElement.classList.remove('modal-open');
+  body.classList.remove('modal-open');
 
-  document.removeEventListener('keydown', handleCloseButtonKeydown);
+  document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-function handleGalleryImageClick (evt, photos) {
+function onDocumentClick (evt, photos) {
   const currentElement = evt.target;
   if (currentElement.classList.contains('picture__img')) {
     evt.preventDefault();
@@ -84,17 +85,17 @@ function handleGalleryImageClick (evt, photos) {
   }
 }
 
-function handleCloseButtonClick (evt) {
+function onCloseButtonClick (evt) {
   evt.preventDefault();
   closeModal();
 }
 
-function handleCloseButtonKeydown (evt) {
+function onDocumentKeydown (evt) {
   if (evt.key === 'Escape') {
     closeModal();
   }
 }
 
-export const managePhotoModal = (photos) => {
-  document.addEventListener('click', (evt) => handleGalleryImageClick(evt, photos));
+export const manageLightbox = (photos) => {
+  document.addEventListener('click', (evt) => onDocumentClick(evt, photos));
 };

@@ -1,11 +1,11 @@
-const photoTemplate = document.querySelector('#picture').content;
+const photoTemplate = document.querySelector('#picture');
 const photoWrapper = document.querySelector('.pictures');
 
 export const createGallery = (photos) => {
   const fragment = document.createDocumentFragment();
 
   photos.forEach((photo) => {
-    const newPhoto = photoTemplate.cloneNode(true);
+    const newPhoto = photoTemplate.content.cloneNode(true);
     newPhoto.querySelector('.picture__img').src = photo.url;
     newPhoto.querySelector('.picture__img').alt = photo.description;
     newPhoto.querySelector('.picture__img').dataset.imageId = photo.id;
