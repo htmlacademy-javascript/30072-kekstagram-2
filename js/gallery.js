@@ -2,7 +2,12 @@ const photoTemplate = document.querySelector('#picture');
 const photoWrapper = document.querySelector('.pictures');
 
 export const createGallery = (photos) => {
+  const renderedPhotos = document.querySelectorAll('.picture');
   const fragment = document.createDocumentFragment();
+
+  renderedPhotos.forEach((item) => {
+    item.remove();
+  });
 
   photos.forEach((photo) => {
     const newPhoto = photoTemplate.content.cloneNode(true);
@@ -16,4 +21,3 @@ export const createGallery = (photos) => {
 
   photoWrapper.append(fragment);
 };
-

@@ -28,6 +28,6 @@ export function onDocumentClick (evt) {
 }
 
 sliderElement.noUiSlider.on('update', () => {
-  effectInput.value = sliderElement.noUiSlider.get();
+  effectInput.value = Number(sliderElement.noUiSlider.get());
   previewImage.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
 });
