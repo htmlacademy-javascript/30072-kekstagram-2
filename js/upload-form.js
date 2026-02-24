@@ -5,12 +5,15 @@ import { checkHashtagsValidity, checkCommentValidity, COMMENT_ERROR_MESSAGE, get
 import { showSuccessMessage, showErrorMessage } from './form-state.js';
 import { sendData } from './api.js';
 
+const FILE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
+
 const uploadInput = document.querySelector('.img-upload__input');
 const modalOverlay = document.querySelector('.img-upload__overlay');
 const closeModalButton = document.querySelector('.img-upload__cancel');
 
 const imageForm = document.querySelector('.img-upload__form');
 const submitButton = document.querySelector('.img-upload__submit');
+const imagePreview = document.querySelector('.img-upload__preview img');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentTextarea = document.querySelector('.text__description');
@@ -19,6 +22,7 @@ const scaleDownButton = document.querySelector('.scale__control--smaller');
 const scaleUpButton = document.querySelector('.scale__control--bigger');
 
 const effectWrapper = document.querySelector('.img-upload__effect-level');
+const effectPreviews = document.querySelectorAll('.effects__preview');
 
 const pristine = new Pristine(imageForm, {
   classTo: 'img-upload__field-wrapper',
@@ -49,9 +53,23 @@ const closeModal = () => {
   document.removeEventListener('click', onDocumentClick);
 };
 
+const applyUploadedImage = () => {
+  const file = uploadInput.files[0];
+  const fileName = file.name.toLowerCase();
+
+  if (FILE_TYPES.some((it) => fileName.endsWith(it))) {
+    imagePreview.src = URL.createObjectURL(file);
+
+    effectPreviews.forEach((item) => {
+      item.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
+    });
+  }
+};
+
 function onUploadInputChange (evt) {
   evt.preventDefault();
   openModal();
+  applyUploadedImage();
 }
 
 function onCloseButtonClick (evt) {
