@@ -10,12 +10,12 @@ const previewImage = document.querySelector('.img-upload__preview img');
 export const updateImageScale = (direction) => {
   const purifiedCurrentValue = parseInt(scaleInput.value, 10);
   if (direction === 'up' && purifiedCurrentValue < Scale.MAX) {
-    scaleInput.value = `${purifiedCurrentValue + Scale.STEP}%`;
-    previewImage.style.scale = (purifiedCurrentValue + Scale.STEP) / 100;
+    scaleInput.value = `${Number(purifiedCurrentValue + Scale.STEP)}%`;
+    previewImage.style.transform = `scale(${(Number(purifiedCurrentValue + Scale.STEP) / 100)})`;
   }
   if (direction === 'down' && purifiedCurrentValue > Scale.MIN) {
-    scaleInput.value = `${purifiedCurrentValue - Scale.STEP}%`;
-    previewImage.style.scale = (purifiedCurrentValue - Scale.STEP) / 100;
+    scaleInput.value = `${Number(purifiedCurrentValue - Scale.STEP)}%`;
+    previewImage.style.transform = `scale(${(Number(purifiedCurrentValue - Scale.STEP) / 100)})`;
   }
 };
 

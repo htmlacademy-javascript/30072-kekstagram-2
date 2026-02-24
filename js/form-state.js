@@ -15,21 +15,34 @@ const tryAgainButton = formDataErrorElement.querySelector('.error__button');
 const formDataSuccessTemplate = document.querySelector('#success');
 const formDataSuccessClone = formDataSuccessTemplate.content.cloneNode(true);
 const formDataSuccessElement = formDataSuccessClone.querySelector('.success');
+const formDataSuccessElementInner = formDataSuccessElement.querySelector('.success__inner');
 const successCloseButton = formDataSuccessElement.querySelector('.success__button');
 
+const removeSuccessModal = () => {
+  formDataSuccessElement.remove();
+  body.removeEventListener('keydown', onBodyKeydown);
+  document.removeEventListener('click', onDocumentClick);
+};
+
+const removeErrorModal = () => {
+  formDataErrorElement.remove();
+  body.removeEventListener('keydown', onBodyKeydown);
+  document.removeEventListener('click', onDocumentClick);
+};
 
 export const showSuccessMessage = (closeModal) => {
   closeModal();
   body.append(formDataSuccessElement);
   successCloseButton.addEventListener('click', onSuccessCloseButtonClick);
-  document.addEventListener('keydown', onDocumentKeydown);
+  body.addEventListener('keydown', onBodyKeydown);
+  document.addEventListener('click', onDocumentClick(formDataSuccessElementInner, removeSuccessModal));
 };
 
 export const showErrorMessage = () => {
   body.append(formDataErrorElement);
   tryAgainButton.addEventListener('click', onTryAgainButtonClick);
-  document.addEventListener('keydown', onDocumentKeydown);
-  document.addEventListener('click', onDocumentClick);
+  body.addEventListener('keydown', onBodyKeydown);
+  document.addEventListener('click', onDocumentClick(formDataErrorElementInner, removeErrorModal));
 };
 
 export const showDataErrorMessage = () => {
@@ -37,17 +50,6 @@ export const showDataErrorMessage = () => {
   setTimeout(() => {
     serverDataErrorElement.remove();
   }, REMOVE_SERVER_MESSAGE_TIMEOUT);
-};
-
-const removeSuccessModal = () => {
-  formDataSuccessElement.remove();
-  document.removeEventListener('keydown', onDocumentKeydown);
-};
-
-const removeErrorModal = () => {
-  formDataErrorElement.remove();
-  document.removeEventListener('keydown', onDocumentKeydown);
-  document.removeEventListener('click', onDocumentClick);
 };
 
 function onSuccessCloseButtonClick (evt) {
@@ -60,7 +62,7 @@ function onTryAgainButtonClick (evt) {
   removeErrorModal();
 }
 
-function onDocumentKeydown (evt) {
+function onBodyKeydown (evt) {
   if (evt.key === 'Escape') {
     evt.stopPropagation();
     if (formDataSuccessElement.isConnected) {
@@ -72,12 +74,10 @@ function onDocumentKeydown (evt) {
   }
 }
 
-function onDocumentClick (evt) {
-  if (!formDataErrorElementInner) {
-    return;
-  }
-
-  if (!formDataErrorElementInner.contains(evt.target)) {
-    removeErrorModal();
-  }
+function onDocumentClick (element, cb) {
+  return (evt) => {
+    if (element && !element.contains(evt.target)) {
+      cb();
+    }
+  };
 }

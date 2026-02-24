@@ -1,7 +1,7 @@
 const BASE_URL = 'https://31.javascript.htmlacademy.pro/kekstagram';
 const ApiEndpoint = {
   DATA: '/data',
-  UPLOAD: '/1',
+  UPLOAD: '/',
 };
 
 export const getData = () => fetch(BASE_URL + ApiEndpoint.DATA)
