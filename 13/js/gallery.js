@@ -1,0 +1,23 @@
+const photoTemplate = document.querySelector('#picture');
+const photoWrapper = document.querySelector('.pictures');
+
+export const createGallery = (photos) => {
+  const renderedPhotos = document.querySelectorAll('.picture');
+  const fragment = document.createDocumentFragment();
+
+  renderedPhotos.forEach((item) => {
+    item.remove();
+  });
+
+  photos.forEach((photo) => {
+    const newPhoto = photoTemplate.content.cloneNode(true);
+    newPhoto.querySelector('.picture__img').src = photo.url;
+    newPhoto.querySelector('.picture__img').alt = photo.description;
+    newPhoto.querySelector('.picture__img').dataset.imageId = photo.id;
+    newPhoto.querySelector('.picture__comments').textContent = photo.comments.length;
+    newPhoto.querySelector('.picture__likes').textContent = photo.likes;
+    fragment.append(newPhoto);
+  });
+
+  photoWrapper.append(fragment);
+};
