@@ -4,14 +4,16 @@ import { createGallery } from './gallery.js';
 const RANDOM_FILTER_AMOUNT = 10;
 const RENDERED_DELAY = 500;
 const filtersWrapper = document.querySelector('.img-filters');
-const FilterButton = {
-  CLASS_STATIC: 'img-filters__button',
-  CLASS_ACTIVE: 'img-filters__button--active',
-  ID_DEFAULT: 'filter-default',
-  ID_RANDOM: 'filter-random',
-  ID_POPULAR: 'filter-discussed',
+const FilterButtonClass = {
+  STATIC: 'img-filters__button',
+  ACTIVE: 'img-filters__button--active',
 };
-const filterButtons = document.querySelectorAll(`.${FilterButton.CLASS_STATIC}`);
+const FilterButtonId = {
+  DEFAULT: 'filter-default',
+  RANDOM: 'filter-random',
+  POPULAR: 'filter-discussed',
+};
+const filterButtons = document.querySelectorAll(`.${FilterButtonClass.STATIC}`);
 
 export const showFilters = () => {
   filtersWrapper.classList.remove('img-filters--inactive');
@@ -44,35 +46,38 @@ const filterPopularPhotos = (data) => {
 };
 
 const toggleActiveClass = (element) => {
-  if (!element.classList.contains(FilterButton.CLASS_ACTIVE)) {
+  if (!element.classList.contains(FilterButtonClass.ACTIVE)) {
     filterButtons.forEach((item) => {
-      item.classList.remove(FilterButton.CLASS_ACTIVE);
+      item.classList.remove(FilterButtonClass.ACTIVE);
     });
-    element.classList.add(FilterButton.CLASS_ACTIVE);
+    element.classList.add(FilterButtonClass.ACTIVE);
   }
 };
 
-function onDocumentClick (evt, data) {
+const debounceRender = debounce((filterType, data) => {
+  filterType(data);
+}, RENDERED_DELAY);
+
+function onFiltersClick (evt, data) {
   const currentElement = evt.target;
-  if (currentElement.classList.contains(FilterButton.CLASS_STATIC)) {
+  if (currentElement.classList.contains(FilterButtonClass.STATIC)) {
     evt.preventDefault();
-
-    if (currentElement.id === FilterButton.ID_DEFAULT) {
-      filterDefaultPhotos(data);
-    }
-
-    if (currentElement.id === FilterButton.ID_RANDOM) {
-      filterRandomPhotos(data);
-    }
-
-    if (currentElement.id === FilterButton.ID_POPULAR) {
-      filterPopularPhotos(data);
-    }
-
     toggleActiveClass(currentElement);
+
+    if (currentElement.id === FilterButtonId.DEFAULT) {
+      debounceRender(filterDefaultPhotos, data);
+    }
+
+    if (currentElement.id === FilterButtonId.RANDOM) {
+      debounceRender(filterRandomPhotos, data);
+    }
+
+    if (currentElement.id === FilterButtonId.POPULAR) {
+      debounceRender(filterPopularPhotos, data);
+    }
   }
 }
 
 export const manageFilters = (data) => {
-  debounce(document.addEventListener('click', (evt) => onDocumentClick(evt, data)), RENDERED_DELAY);
+  filtersWrapper.addEventListener('click', (evt) => onFiltersClick(evt, data));
 };
