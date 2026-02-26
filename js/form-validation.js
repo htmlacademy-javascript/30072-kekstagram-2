@@ -14,8 +14,6 @@ const HashtagError = {
 const COMMENT_MAX_LENGTH = 140;
 export const COMMENT_ERROR_MESSAGE = 'Длина комментария не должна быть больше 140 символов';
 
-export const checkCommentValidity = (element) => element.value.length <= COMMENT_MAX_LENGTH;
-
 const checkHashtagsUnique = (hashtags) => {
   const uniqueHashtagsArray = new Set(hashtags);
   return uniqueHashtagsArray.size !== hashtags.length;
@@ -31,9 +29,10 @@ const checkHashtagSymbols = (hashtag) => !(/^#[a-zа-яё0-9]+$/i.test(hashtag))
 
 const getArrayFromInput = (element) => {
   const purifiedInputValue = element.value.trim().toLowerCase();
-  const hashtagsArray = purifiedInputValue.split(/\s+/).filter(Boolean);
-  return hashtagsArray;
+  return purifiedInputValue.split(/\s+/).filter(Boolean);
 };
+
+export const checkCommentValidity = (element) => element.value.length <= COMMENT_MAX_LENGTH;
 
 export const getHashtagsErrorMessage = (element) => {
   const hashtagsArray = getArrayFromInput(element);
@@ -69,11 +68,5 @@ export const checkHashtagsValidity = (element) => {
     return false;
   }
 
-  return hashtagsArray.every((hashtag) => {
-    if (checkHashtagLength(hashtag) || checkHashtagStartWith(hashtag) || checkHashtagSymbols(hashtag)) {
-      return false;
-    }
-
-    return true;
-  });
+  return hashtagsArray.every((hashtag) => !(checkHashtagLength(hashtag) || checkHashtagStartWith(hashtag) || checkHashtagSymbols(hashtag)));
 };

@@ -12,6 +12,7 @@ const commentTemplate = photoModal.querySelector('.social__comment');
 const commentShownCount = photoModal.querySelector('.social__comment-shown-count');
 const commentTotalCount = photoModal.querySelector('.social__comment-total-count');
 const commentsLoader = photoModal.querySelector('.social__comments-loader');
+const galleryWrapper = document.querySelector('.pictures');
 
 const createFullPhoto = (imageId, photos) => {
   const currentPhoto = photos.find((photo) => photo.id === imageId);
@@ -74,7 +75,7 @@ const closeModal = () => {
   document.removeEventListener('keydown', onDocumentKeydown);
 };
 
-function onDocumentClick (evt, photos) {
+const onGalleryClick = (evt, photos) => {
   const currentElement = evt.target;
   if (currentElement.classList.contains('picture__img')) {
     evt.preventDefault();
@@ -83,7 +84,7 @@ function onDocumentClick (evt, photos) {
 
     openModal();
   }
-}
+};
 
 function onCloseButtonClick (evt) {
   evt.preventDefault();
@@ -97,5 +98,5 @@ function onDocumentKeydown (evt) {
 }
 
 export const manageLightbox = (photos) => {
-  document.addEventListener('click', (evt) => onDocumentClick(evt, photos));
+  galleryWrapper.addEventListener('click', (evt) => onGalleryClick(evt, photos));
 };

@@ -19,12 +19,12 @@ export const updateImageScale = (direction) => {
   }
 };
 
-export function onScaleDownButtonClick (evt) {
+export const onScaleDownButtonClick = (evt) => {
   evt.preventDefault();
   updateImageScale('down');
-}
+};
 
-export function onScaleUpButtonClick (evt) {
+export const onScaleUpButtonClick = (evt) => {
   evt.preventDefault();
   updateImageScale('up');
-}
+};
