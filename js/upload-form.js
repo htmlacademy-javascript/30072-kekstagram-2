@@ -1,8 +1,8 @@
-import { body } from './utils.js';
+import { body, imageForm, imagePreview } from './utils.js';
 import { onScaleDownButtonClick, onScaleUpButtonClick } from './photo-scale.js';
-import { onDocumentClick } from './photo-effect.js';
+import { onEffectsClick } from './photo-effect.js';
 import { checkHashtagsValidity, checkCommentValidity, COMMENT_ERROR_MESSAGE, getHashtagsErrorMessage } from './form-validation.js';
-import { showSuccessMessage, showErrorMessage } from './form-state.js';
+import { showSuccessMessage, showErrorMessage } from './form-messages.js';
 import { sendData } from './api.js';
 
 const FILE_TYPES = ['jpg', 'jpeg', 'png', 'webp'];
@@ -11,9 +11,7 @@ const uploadInput = document.querySelector('.img-upload__input');
 const modalOverlay = document.querySelector('.img-upload__overlay');
 const closeModalButton = document.querySelector('.img-upload__cancel');
 
-const imageForm = document.querySelector('.img-upload__form');
 const submitButton = document.querySelector('.img-upload__submit');
-const imagePreview = document.querySelector('.img-upload__preview img');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentTextarea = document.querySelector('.text__description');
@@ -21,6 +19,7 @@ const commentTextarea = document.querySelector('.text__description');
 const scaleDownButton = document.querySelector('.scale__control--smaller');
 const scaleUpButton = document.querySelector('.scale__control--bigger');
 
+const effectsWrapper = document.querySelector('.effects__list');
 const effectWrapper = document.querySelector('.img-upload__effect-level');
 const effectPreviews = document.querySelectorAll('.effects__preview');
 
@@ -40,7 +39,7 @@ const openModal = () => {
   scaleDownButton.addEventListener('click', onScaleDownButtonClick);
   scaleUpButton.addEventListener('click', onScaleUpButtonClick);
 
-  document.addEventListener('click', onDocumentClick);
+  effectsWrapper.addEventListener('click', onEffectsClick);
   effectWrapper.classList.add('hidden');
 };
 
@@ -50,7 +49,7 @@ const closeModal = () => {
   imageForm.reset();
   pristine.reset();
   document.removeEventListener('keydown', onDocumentFormKeydown);
-  document.removeEventListener('click', onDocumentClick);
+  effectsWrapper.removeEventListener('click', onEffectsClick);
 };
 
 const applyUploadedImage = () => {
@@ -66,12 +65,6 @@ const applyUploadedImage = () => {
   }
 };
 
-function onUploadInputChange (evt) {
-  evt.preventDefault();
-  openModal();
-  applyUploadedImage();
-}
-
 function onCloseButtonClick (evt) {
   evt.preventDefault();
   closeModal();
@@ -84,6 +77,12 @@ function onDocumentFormKeydown (evt) {
     }
   }
 }
+
+const onUploadInputChange = (evt) => {
+  evt.preventDefault();
+  openModal();
+  applyUploadedImage();
+};
 
 const toggleSubmitButton = (disabled) => {
   submitButton.disabled = disabled;
@@ -103,7 +102,12 @@ export const submitImageForm = () => {
 
       toggleSubmitButton(true);
 
-      sendData(fetchBody, () => showSuccessMessage(closeModal), () => showErrorMessage(), () => toggleSubmitButton(false));
+      sendData(fetchBody, () => {
+        showSuccessMessage();
+        closeModal();
+      },
+      () => showErrorMessage(),
+      () => toggleSubmitButton(false));
     }
   });
 };

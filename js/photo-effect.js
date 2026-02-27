@@ -1,15 +1,19 @@
+import { imageForm, imagePreview } from './utils.js';
 import { getEffectFilter, getEffectOptions } from './slider-helpers.js';
 
-const imageForm = document.querySelector('.img-upload__form');
-const previewImage = document.querySelector('.img-upload__preview img');
 const effectWrapper = document.querySelector('.img-upload__effect-level');
 
 const effectInput = document.querySelector('.effect-level__value');
-const sliderElement = document.querySelector('.effect-level__slider');
+const rangeSlider = document.querySelector('.effect-level__slider');
 
-noUiSlider.create(sliderElement, getEffectOptions());
+noUiSlider.create(rangeSlider, getEffectOptions());
 
-export function onDocumentClick (evt) {
+rangeSlider.noUiSlider.on('update', () => {
+  effectInput.value = Number(rangeSlider.noUiSlider.get());
+  imagePreview.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
+});
+
+export const onEffectsClick = (evt) => {
   const currentElement = evt.target;
   if (currentElement.classList.contains('effects__radio')) {
     const currentValue = currentElement.value;
@@ -22,12 +26,7 @@ export function onDocumentClick (evt) {
       effectWrapper.classList.remove('hidden');
     }
 
-    previewImage.style.filter = currentEffect;
-    sliderElement.noUiSlider.updateOptions(currentOption, true);
+    imagePreview.style.filter = currentEffect;
+    rangeSlider.noUiSlider.updateOptions(currentOption, true);
   }
-}
-
-sliderElement.noUiSlider.on('update', () => {
-  effectInput.value = Number(sliderElement.noUiSlider.get());
-  previewImage.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
-});
+};

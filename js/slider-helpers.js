@@ -1,86 +1,77 @@
-const defaultOptions = {
-  range: {
-    min: 0,
-    max: 100
-  },
-  start: 0,
+const Effect = {
+  NONE: 'none',
+  CHROME : 'chrome',
+  SEPIA: 'sepia',
+  MARVIN: 'marvin',
+  PHOBOS: 'phobos',
+  HEAT: 'heat',
 };
 
-const chromeOptions = {
-  range: {
-    min: 0,
-    max: 1,
+const EffectConfig = {
+  [Effect.NONE]: {
+    range: {
+      min: 0,
+      max: 100
+    },
+    start: 0,
   },
-  start: 1,
-  step: 0.1,
-};
-
-const sepiaOptions = {
-  range: {
-    min: 0,
-    max: 1,
+  [Effect.CHROME]: {
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: 0.1,
   },
-  start: 1,
-  step: 0.1,
-};
-
-const marvinOptions = {
-  range: {
-    min: 0,
-    max: 100,
+  [Effect.SEPIA]: {
+    range: {
+      min: 0,
+      max: 1,
+    },
+    start: 1,
+    step: 0.1,
   },
-  start: 100,
-  step: 1,
-};
-
-const phobosOptions = {
-  range: {
-    min: 0,
-    max: 3,
+  [Effect.MARVIN]: {
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: 100,
+    step: 1,
   },
-  start: 3,
-  step: 0.1,
-};
-
-const heatOptions = {
-  range: {
-    min: 1,
-    max: 3,
+  [Effect.PHOBOS]: {
+    range: {
+      min: 0,
+      max: 3,
+    },
+    start: 3,
+    step: 0.1,
   },
-  start: 3,
-  step: 0.1,
+  [Effect.HEAT]: {
+    range: {
+      min: 1,
+      max: 3,
+    },
+    start: 3,
+    step: 0.1,
+  },
 };
 
 export const getEffectFilter = (effect, value) => {
   switch (effect) {
-    case 'chrome':
+    case Effect.CHROME:
       return `grayscale(${value})`;
-    case 'sepia':
+    case Effect.SEPIA:
       return `sepia(${value})`;
-    case 'marvin':
+    case Effect.MARVIN:
       return `invert(${value}%)`;
-    case 'phobos':
+    case Effect.PHOBOS:
       return `blur(${value}px)`;
-    case 'heat':
+    case Effect.HEAT:
       return `brightness(${value})`;
     default:
       return null;
   }
 };
 
-export const getEffectOptions = (effect) => {
-  switch (effect) {
-    case 'chrome':
-      return chromeOptions;
-    case 'sepia':
-      return sepiaOptions;
-    case 'marvin':
-      return marvinOptions;
-    case 'phobos':
-      return phobosOptions;
-    case 'heat':
-      return heatOptions;
-    default:
-      return defaultOptions;
-  }
-};
+export const getEffectOptions = (effect = Effect.NONE) => EffectConfig[effect];

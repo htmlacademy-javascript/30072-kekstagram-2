@@ -1,3 +1,5 @@
+import { imagePreview } from './utils.js';
+
 const Scale = {
   MIN: 25,
   MAX: 100,
@@ -5,26 +7,25 @@ const Scale = {
 };
 
 const scaleInput = document.querySelector('.scale__control--value');
-const previewImage = document.querySelector('.img-upload__preview img');
 
 export const updateImageScale = (direction) => {
   const purifiedCurrentValue = parseInt(scaleInput.value, 10);
   if (direction === 'up' && purifiedCurrentValue < Scale.MAX) {
     scaleInput.value = `${Number(purifiedCurrentValue + Scale.STEP)}%`;
-    previewImage.style.transform = `scale(${(Number(purifiedCurrentValue + Scale.STEP) / 100)})`;
+    imagePreview.style.transform = `scale(${(Number(purifiedCurrentValue + Scale.STEP) / 100)})`;
   }
   if (direction === 'down' && purifiedCurrentValue > Scale.MIN) {
     scaleInput.value = `${Number(purifiedCurrentValue - Scale.STEP)}%`;
-    previewImage.style.transform = `scale(${(Number(purifiedCurrentValue - Scale.STEP) / 100)})`;
+    imagePreview.style.transform = `scale(${(Number(purifiedCurrentValue - Scale.STEP) / 100)})`;
   }
 };
 
-export function onScaleDownButtonClick (evt) {
+export const onScaleDownButtonClick = (evt) => {
   evt.preventDefault();
   updateImageScale('down');
-}
+};
 
-export function onScaleUpButtonClick (evt) {
+export const onScaleUpButtonClick = (evt) => {
   evt.preventDefault();
   updateImageScale('up');
-}
+};

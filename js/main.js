@@ -1,14 +1,13 @@
 import { getData } from './api.js';
 import { createGallery } from './gallery.js';
-import { showFilters, manageFilters } from './filters.js';
+import { initFilters } from './filters.js';
 import { manageLightbox } from './lightbox.js';
-import { showDataErrorMessage } from './form-state.js';
+import { showDataErrorMessage } from './form-messages.js';
 import { submitImageForm } from './upload-form.js';
 
 getData().then((data) => {
   createGallery(data);
-  showFilters();
-  manageFilters(data);
+  initFilters(data);
   manageLightbox(data);
 }).catch(() => {
   showDataErrorMessage();
