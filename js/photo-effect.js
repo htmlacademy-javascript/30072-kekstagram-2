@@ -1,7 +1,6 @@
+import { imageForm, imagePreview } from './utils.js';
 import { getEffectFilter, getEffectOptions } from './slider-helpers.js';
 
-const imageForm = document.querySelector('.img-upload__form');
-const previewImage = document.querySelector('.img-upload__preview img');
 const effectWrapper = document.querySelector('.img-upload__effect-level');
 
 const effectInput = document.querySelector('.effect-level__value');
@@ -11,7 +10,7 @@ noUiSlider.create(rangeSlider, getEffectOptions());
 
 rangeSlider.noUiSlider.on('update', () => {
   effectInput.value = Number(rangeSlider.noUiSlider.get());
-  previewImage.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
+  imagePreview.style.filter = getEffectFilter(imageForm.elements.effect.value, effectInput.value);
 });
 
 export const onEffectsClick = (evt) => {
@@ -27,7 +26,7 @@ export const onEffectsClick = (evt) => {
       effectWrapper.classList.remove('hidden');
     }
 
-    previewImage.style.filter = currentEffect;
+    imagePreview.style.filter = currentEffect;
     rangeSlider.noUiSlider.updateOptions(currentOption, true);
   }
 };

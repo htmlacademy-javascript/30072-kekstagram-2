@@ -2,7 +2,6 @@ import { getRandomElement, debounce } from './utils.js';
 import { createGallery } from './gallery.js';
 
 const RANDOM_FILTER_AMOUNT = 10;
-const RENDERED_DELAY = 500;
 const FilterButtonClass = {
   STATIC: 'img-filters__button',
   ACTIVE: 'img-filters__button--active',
@@ -15,7 +14,7 @@ const FilterButtonId = {
 const filtersWrapper = document.querySelector('.img-filters');
 const filterButtons = document.querySelectorAll(`.${FilterButtonClass.STATIC}`);
 
-const renderGallery = debounce(createGallery, RENDERED_DELAY);
+const renderGallery = debounce(createGallery);
 
 const filterRandomPhotos = (data) => {
   const randomData = [];

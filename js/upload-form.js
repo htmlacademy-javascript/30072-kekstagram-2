@@ -1,4 +1,4 @@
-import { body } from './utils.js';
+import { body, imageForm, imagePreview } from './utils.js';
 import { onScaleDownButtonClick, onScaleUpButtonClick } from './photo-scale.js';
 import { onEffectsClick } from './photo-effect.js';
 import { checkHashtagsValidity, checkCommentValidity, COMMENT_ERROR_MESSAGE, getHashtagsErrorMessage } from './form-validation.js';
@@ -11,9 +11,7 @@ const uploadInput = document.querySelector('.img-upload__input');
 const modalOverlay = document.querySelector('.img-upload__overlay');
 const closeModalButton = document.querySelector('.img-upload__cancel');
 
-const imageForm = document.querySelector('.img-upload__form');
 const submitButton = document.querySelector('.img-upload__submit');
-const imagePreview = document.querySelector('.img-upload__preview img');
 
 const hashtagsInput = document.querySelector('.text__hashtags');
 const commentTextarea = document.querySelector('.text__description');

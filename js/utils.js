@@ -1,4 +1,7 @@
+const DELAY = 500;
 export const body = document.querySelector('body');
+export const imageForm = document.querySelector('.img-upload__form');
+export const imagePreview = document.querySelector('.img-upload__preview img');
 
 const getRandomInteger = (i, j) => {
   const lower = Math.ceil(Math.min(i, j));
@@ -9,7 +12,7 @@ const getRandomInteger = (i, j) => {
 
 export const getRandomElement = (minItem, items) => items[getRandomInteger(minItem, items.length - 1)];
 
-export const debounce = (callback, timeoutDelay = 500) => {
+export const debounce = (callback, timeoutDelay = DELAY) => {
   let timeoutId;
 
   return (...rest) => {
